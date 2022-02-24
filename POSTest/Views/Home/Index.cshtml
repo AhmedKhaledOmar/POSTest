@@ -1,0 +1,257 @@
+﻿@model POSTest.Dto.Product
+@{
+    ViewData["Title"] = "Home page";
+}
+
+<div class="page-header d-md-flex justify-content-between">
+    <div>
+        <h3>Users</h3>
+        <nav aria-label="breadcrumb" class="d-flex align-items-start">
+            <ol class="breadcrumb">
+                <li class="breadcrumb-item">
+                    <a asp-action="index" asp-controller="home">Items Management</a>
+                </li>
+            </ol>
+        </nav>
+    </div>
+    <div class="mt-2 mt-md-0">
+        <a href="#" class="btn btn-success" data-toggle="modal"
+        data-target="#mdlNew" title="Add new item">
+        Add new item
+        </a>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-md-12">
+
+        <div class="card">
+            <div class="card-body">
+                <div class="table-responsive">
+                    <table id="user-list" class="table table-lg">
+                        <thead>
+                            <tr>
+                                <th>ID</th>
+                                <th>Name</th>
+                                <th>Price</th>
+                                <th>Sizes</th>
+                                <th class="text-right">Action</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @{int counter = -1;}
+                            @foreach (var Item in Model.Items)
+                            {
+
+                                 counter++;
+                                <tr>
+                                    <td>@Item.Id</td>
+                                    <td>
+                                        <img src="@Item.Picture"   
+                                        class="rounded-circle"   
+                                        height="40" width="40"   
+                                        asp-append-version="true" />  
+                                        @Item.Name
+                                    </td>
+                                    <td>@Item.Price</td>
+                                    <td>@Item.SizeIds.Count</td>
+                                    <td class="text-right">
+                                        <div class="dropdown">
+                                            <a href="#" data-toggle="dropdown"
+                                               class="btn btn-floating"
+                                               aria-haspopup="true" aria-expanded="false">
+                                                <i class="ti-more-alt"></i>
+                                            </a>
+                                            <div class="dropdown-menu dropdown-menu-right">
+                                                 <a href="#" class="btn btn-success" data-toggle="modal"
+                                                data-target="#mdlNew" title="Edit item" onclick="UpdateDialogWithModel(@counter)">Edit</a>
+                                                <a href="#" @Url.Action() onclick="DeleteItem(@Item.Id)" class="dropdown-item text-danger">Delete</a>
+                                            </div>
+                                        </div>
+                                    </td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@* <form enctype="multipart/form-data" asp-action="Save">*@
+
+<div id="mdlNew" class="modal fade modal-item" tabindex="-1" role="dialog" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h6 class="modal-title">Add new item</h6>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <i class="ti-close"></i>
+                </button>
+            </div>
+            <div id="frmItem">
+                <div class="modal-body">
+                    <div class="row">
+                        <div class="col-12">
+                            <div class="form-group">
+                                <label>Item Name</label>
+                               <input id="ItemNameId"  class="form-control" />  
+                                @*<span asp-validation-for="ItemName" class="text-danger"></span> *@
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-12">
+                            <div class="form-group">
+                                <label>Price</label>
+                                <input id="ItemPriceId" class="form-control" />  
+                            @*<span asp-validation-for="Price" class="text-danger"></span>  *@
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-12">
+                            <div class="form-group">
+                                <label>Picture</label>
+                                @*<div class="custom-file">  
+                                <input  class="custom-file-input" id="customFile">  
+                                <label class="custom-file-label" for="customFile">Choose file</label>  
+                            </div>  
+                            <span asp-validation-for="Image" class="text-danger"></span> *@
+                            <label  class="control-label"></label>  
+                            <div class="custom-file">  
+                                <input id="customFile" class="custom-file-input" id="customFile">  
+                                <label class="custom-file-label" for="customFile">Choose file</label>  
+                            </div>  
+                            <span  class="text-danger"></span> 
+                            </div>
+                          
+                        </div>
+                    </div>
+
+                    <div class="row" for="sizes">
+                        <div class="col-5">
+                            <div class="form-group">
+                                <label>Size Name</label>
+                                <input  id="sizename" class="form-control ItemNameClass" />  
+                                <span  class="text-danger"></span>
+                            </div>
+                        </div>
+                        <div class="col-5">
+                            <div class="form-group">
+                                <label>Size Price</label>
+                                <input  id="sizePrice" class="form-control ItemPriceClass" />  
+                                <span class="text-danger"></span>
+                            </div>
+                        </div>
+                        <div class="col-2">
+                            <div class="form-group"  style="margin-top: 27%;">
+                                <a href="Javascript:void(0);") 
+                                class="btn btn-success add-size">Add</a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">
+                        Close
+                    </button>
+                    @Html.AntiForgeryToken()
+                    <button type="submit" onclick="AddItem()" id="btnSaveHours" class="btn btn-primary" title="Save">Save</button>
+                </div>
+            </div>
+        </div>
+    </div>
+  </div>
+@*</form>
+*@
+@section Scripts
+{
+    <script type="text/javascript">
+        
+        var selectedIdForEdit = 0;
+
+        $(document).on('click', '.add-size', function(){
+            var size = $('div[for="sizes"]:first').clone();
+
+            size.find('.add-size').addClass('remove-size');
+            size.find('.add-size').addClass('btn-danger');
+            size.find('.add-size').text('Remove');
+            size.find('.add-size').removeClass('add-size');
+            $('#frmItem .modal-body').append(size);
+        });
+
+        $(document).on('click', '.remove-size', function () {
+            $(this).closest('div[for="sizes"]').remove();
+        }); 
+
+        function AddItem()
+        {
+            const fullName = document.getElementsByClassName('ItemNameClass');
+            const arrOfItemName = [...fullName].map(input => input.value);
+
+            const fullSize = document.getElementsByClassName('ItemPriceClass');
+            const arrOfItemPrice = [...fullSize].map(input => input.value);
+
+            var itemPricevalue = document.getElementById("ItemPriceId").value;
+            var itemNameValue = document.getElementById("ItemNameId").value;
+
+
+            var itemPhotoValue = document.getElementById("customFile").value;
+            //var fileInput = document.getElementById('customFile');
+            //var itemPhotoValue = fileInput.files[0];
+            
+            var items = []
+
+            // JSON.stringify(
+            var product = JSON.stringify( {
+                    'ItemName': itemNameValue,
+                    'Price': itemPricevalue,
+                    'Image':itemPhotoValue ,
+                    'SizeNames':arrOfItemName,
+                    'SizePrices':arrOfItemPrice
+            });
+
+             console.log(product);
+            $.ajax({
+                url: '/Home/Save',
+                type: 'POST',
+                contentType: 'application/json',
+                data: product,
+                success: function (data) {
+                    location.reload();
+                },
+                });
+        }
+        
+
+        function UpdateDialogWithModel(index)
+        {
+            var list = @Html.Raw(Newtonsoft.Json.JsonConvert.SerializeObject(@Model.Items));
+            list[index]
+            
+
+            document.getElementById("ItemPriceId").value = list[index].Price;
+            document.getElementById("ItemNameId").value =  list[index].Name;
+
+            selectedIdForEdit = list[index].Id;
+
+        }
+
+        function DeleteItem(index){
+            //var list = Html.Raw(Newtonsoft.Json.JsonConvert.SerializeObject(Model.Items));
+            //;
+               $.ajax({
+                url: '/Home/Delete/' + index ,
+                type: 'DELETE',
+                contentType: 'application/json',
+                success: function (data) {
+                    location.reload();
+                },
+                });
+        }
+       
+      //  });
+    </script>
+}
