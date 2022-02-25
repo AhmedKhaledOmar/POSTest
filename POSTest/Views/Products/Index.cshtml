@@ -40,7 +40,7 @@
                                         <span class="text-truncate"> @(@Model[ItemIndex].Price +@Model[ItemIndex].SizeIds[sizeIndex].SizePrice) BHD</span>
                                     </p>
                                     <div class="mt-2">
-                                        <button onclick="AddToCard(@ItemIndex , @sizeIndex)"
+                                        <button onclick="AddToCard(@ItemIndex , @sizeIndex ,)"
                                         class="btn btn-primary add-to-card">Add to Cart</button>
                                     </div>
                                 </div>
@@ -57,17 +57,21 @@
     var index = 0;
     function AddToCard(itemIndex , sizeIndex) 
     {
-        var Item = @Html.Raw(Newtonsoft.Json.JsonConvert.SerializeObject(@Model));
+      
+       var Items = @Html.Raw(Newtonsoft.Json.JsonConvert.SerializeObject(@Model));
+        
+       window.localStorage.setItem("index", JSON.stringify(++index));
         let product = {
-            "productId" : Item[itemIndex].Id,
-            "productName" : Item[itemIndex].Name,
-            "productPrice" : Item[itemIndex].Price,
-            "productPicture" : "~/images/"+Item[itemIndex].Picture,
-            "productSizeName" : Item[itemIndex].SizeIds[sizeIndex].Type,
-            "productSizePrice" : Item[itemIndex].SizeIds[sizeIndex].SizePrice,
+            "productId" : Items[itemIndex].Id,
+            "productName" : Items[itemIndex].Name,
+            "productPrice" : Items[itemIndex].Price,
+            "productPicture" : Items[itemIndex].Picture,
+            "productSizeName" : Items[itemIndex].SizeIds[sizeIndex].Type,
+            "productSizePrice" : Items[itemIndex].SizeIds[sizeIndex].SizePrice,
         };
-        console.log(product);
-        window.localStorage.setItem("product" + ++index  , JSON.stringify(product));
+        var i = localStorage.getItem("index");
+        window.localStorage.setItem("product" +  i , JSON.stringify(product));
         location.reload();
+        //window.localStorage.clear();
     }
 </script>

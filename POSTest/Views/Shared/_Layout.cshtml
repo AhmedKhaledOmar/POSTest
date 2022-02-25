@@ -181,16 +181,15 @@
 </html>
 
 <script>
-
+    var i = null
     var Items = [];
     var length = localStorage.length;
     var totalPrice = null;
     for(var index = 0 ; index < length ; ++index)
     {
        var key = localStorage.key( index );
-       var KeyName = key;
-       console.log(KeyName)
-       if(key == "i18nextLng")
+       i = key;
+       if(key == "index" || key == "i18nextLng" )
             continue;
        var item = localStorage.getItem( key ) ;
        var ItemConvert = JSON.parse(JSON.parse(JSON.stringify(item)));
@@ -201,15 +200,15 @@
                                             '<a href=#  class="px-4 py-3 list-group-item d-flex">'+
                                              '<div class="flex-shrink-0">'+
                                             '<figure class="avatar mr-3">'+
-                                                '<img class="rounded" src="~/images/'+ItemConvert.productPicture+'">'+
+                                                '<img class="rounded" src="/images/'+ItemConvert.productPicture+'">'+
                                             '</figure>'+
                                             '</div>'+
                                             '<div class="flex-grow-1">'+
                                                 '<p class="mb-0 line-height-20 d-flex justify-content-between">'+
                                                     (ItemConvert.productName+ '-' +ItemConvert.productSizeName)+
-                                                     '<button title="Close" data-toggle="tooltip"'+
-                                                        'onclick="x('+key+')" class="hide-show-toggler-item small ti-close">'+
-                                                         '</button>'+
+                                                     '<i title="Close" data-toggle="tooltip"'+
+                                                        'onclick="DeleteItem()" class="hide-show-toggler-item small ti-close">'+
+                                                         '</i>'+
                                                      '</p>'+
                                                  '<span class="text-muted small">X'+(ItemConvert.productPrice + ItemConvert.productSizePrice) +
                                                  '</span>'+
@@ -227,9 +226,10 @@
 
      $('#Total').prepend(total);
 
-     function x(key)
+     function DeleteItem()
      {
-         window.localStorage.removeItem(key);
-         location.reload();
+         console.log(i);
+         //window.localStorage.removeItem(i);
+         //location.reload();
      }
 </script>
