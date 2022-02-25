@@ -1,4 +1,4 @@
-﻿@model POSTest.Dto.Product
+﻿@model Product
 @{
     ViewData["Title"] = "Home page";
 }
@@ -16,7 +16,7 @@
     </div>
     <div class="mt-2 mt-md-0">
         <a href="#" class="btn btn-success" data-toggle="modal"
-        data-target="#mdlNew" title="Add new item">
+        data-target="#mdlNew" onclick=" resetSize()" title="Add new item">
         Add new item
         </a>
     </div>
@@ -39,15 +39,13 @@
                             </tr>
                         </thead>
                         <tbody>
-                            @{int counter = -1;}
-                            @foreach (var Item in Model.Items)
+                            @for (int ItemIndex = 0 ; ItemIndex < Model.Items.Count ; ++ItemIndex)
                             {
-
-                                 counter++;
+                                Item Item = Model.Items[ItemIndex];
                                 <tr>
                                     <td>@Item.Id</td>
                                     <td>
-                                        <img src="@Item.Picture"   
+                                        <img src="~/images/@Item.Picture"   
                                         class="rounded-circle"   
                                         height="40" width="40"   
                                         asp-append-version="true" />  
@@ -63,9 +61,10 @@
                                                 <i class="ti-more-alt"></i>
                                             </a>
                                             <div class="dropdown-menu dropdown-menu-right">
-                                                 <a href="#" class="btn btn-success" data-toggle="modal"
-                                                data-target="#mdlNew" title="Edit item" onclick="UpdateDialogWithModel(@counter)">Edit</a>
-                                                <a href="#" @Url.Action() onclick="DeleteItem(@Item.Id)" class="dropdown-item text-danger">Delete</a>
+                                                 <a href="#" class="dropdown-item text-danger" data-toggle="modal"
+                                                data-target="#mdlNew" title="Edit item" 
+                                                onclick="UpdateDialogWithModel(@ItemIndex)">Edit</a>
+                                                <a href="#" onclick="DeleteItem(@Item.Id)" class="dropdown-item text-danger">Delete</a>
                                             </div>
                                         </div>
                                     </td>
@@ -79,7 +78,7 @@
     </div>
 </div>
 
-@* <form enctype="multipart/form-data" asp-action="Save">*@
+<form enctype="multipart/form-data" id="formId" asp-action="Save" method="post">
 
 <div id="mdlNew" class="modal fade modal-item" tabindex="-1" role="dialog" aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered modal-lg">
@@ -96,8 +95,8 @@
                         <div class="col-12">
                             <div class="form-group">
                                 <label>Item Name</label>
-                               <input id="ItemNameId"  class="form-control" />  
-                                @*<span asp-validation-for="ItemName" class="text-danger"></span> *@
+                               <input asp-for="ItemName" id="ItemNameId"  class="form-control" />  
+                               <span asp-validation-for="ItemName" class="text-danger"></span> 
                             </div>
                         </div>
                     </div>
@@ -105,50 +104,45 @@
                         <div class="col-12">
                             <div class="form-group">
                                 <label>Price</label>
-                                <input id="ItemPriceId" class="form-control" />  
-                            @*<span asp-validation-for="Price" class="text-danger"></span>  *@
+                                <input asp-for="Price" id="ItemPriceId" class="form-control" />  
+                            <span asp-validation-for="Price" class="text-danger"></span>  
                             </div>
                         </div>
                     </div>
                     <div class="row">
                         <div class="col-12">
                             <div class="form-group">
-                                <label>Picture</label>
-                                @*<div class="custom-file">  
-                                <input  class="custom-file-input" id="customFile">  
-                                <label class="custom-file-label" for="customFile">Choose file</label>  
-                            </div>  
-                            <span asp-validation-for="Image" class="text-danger"></span> *@
-                            <label  class="control-label"></label>  
+                               
+                            <label asp-for="Image" class="control-label"></label>  
                             <div class="custom-file">  
-                                <input id="customFile" class="custom-file-input" id="customFile">  
+                                <input asp-for="Image" class="custom-file-input" id="customFile">  
                                 <label class="custom-file-label" for="customFile">Choose file</label>  
                             </div>  
-                            <span  class="text-danger"></span> 
+                            <span asp-validation-for="Image" class="text-danger"></span>  
                             </div>
                           
                         </div>
                     </div>
 
-                    <div class="row" for="sizes">
+                    <div class="SizeClass row" for="sizes">
                         <div class="col-5">
                             <div class="form-group">
-                                <label>Size Name</label>
-                                <input  id="sizename" class="form-control ItemNameClass" />  
-                                <span  class="text-danger"></span>
+                                <label class="SizeNameLabelClass">Size Name</label>
+                                <input name="SizeNames" class="form-control SizeNameClass" />  
+                                <span  class="SizeNameSpanClass text-danger"></span>
                             </div>
                         </div>
                         <div class="col-5">
                             <div class="form-group">
-                                <label>Size Price</label>
-                                <input  id="sizePrice" class="form-control ItemPriceClass" />  
-                                <span class="text-danger"></span>
+                                <label class="SizePriceLabelClass">Size Price</label>
+                                <input  name="SizePrices" class="form-control SizePriceClass" />  
+                                <span class="SizePriceButtonClass text-danger"></span>
                             </div>
                         </div>
-                        <div class="col-2">
+                        <div class="SizeButtonClassName col-2">
                             <div class="form-group"  style="margin-top: 27%;">
                                 <a href="Javascript:void(0);") 
-                                class="btn btn-success add-size">Add</a>
+                                class="btn btn-success add-size ">Add</a>
                             </div>
                         </div>
                     </div>
@@ -157,91 +151,53 @@
                     <button type="button" class="btn btn-secondary" data-dismiss="modal">
                         Close
                     </button>
-                    @Html.AntiForgeryToken()
-                    <button type="submit" onclick="AddItem()" id="btnSaveHours" class="btn btn-primary" title="Save">Save</button>
+                    <button type="submit" id="btnSaveHours" class="btn btn-primary" title="Save">
+                        Save
+                    </button>
                 </div>
             </div>
         </div>
     </div>
   </div>
-@*</form>
-*@
+</form>
+
 @section Scripts
 {
     <script type="text/javascript">
         
-        var selectedIdForEdit = 0;
-
-        $(document).on('click', '.add-size', function(){
-            var size = $('div[for="sizes"]:first').clone();
-
-            size.find('.add-size').addClass('remove-size');
-            size.find('.add-size').addClass('btn-danger');
-            size.find('.add-size').text('Remove');
-            size.find('.add-size').removeClass('add-size');
-            $('#frmItem .modal-body').append(size);
-        });
+        $(document).on('click', '.add-size', function (){
+            addSize()});
 
         $(document).on('click', '.remove-size', function () {
             $(this).closest('div[for="sizes"]').remove();
         }); 
 
-        function AddItem()
-        {
-            const fullName = document.getElementsByClassName('ItemNameClass');
-            const arrOfItemName = [...fullName].map(input => input.value);
-
-            const fullSize = document.getElementsByClassName('ItemPriceClass');
-            const arrOfItemPrice = [...fullSize].map(input => input.value);
-
-            var itemPricevalue = document.getElementById("ItemPriceId").value;
-            var itemNameValue = document.getElementById("ItemNameId").value;
-
-
-            var itemPhotoValue = document.getElementById("customFile").value;
-            //var fileInput = document.getElementById('customFile');
-            //var itemPhotoValue = fileInput.files[0];
-            
-            var items = []
-
-            // JSON.stringify(
-            var product = JSON.stringify( {
-                    'ItemName': itemNameValue,
-                    'Price': itemPricevalue,
-                    'Image':itemPhotoValue ,
-                    'SizeNames':arrOfItemName,
-                    'SizePrices':arrOfItemPrice
-            });
-
-             console.log(product);
-            $.ajax({
-                url: '/Home/Save',
-                type: 'POST',
-                contentType: 'application/json',
-                data: product,
-                success: function (data) {
-                    location.reload();
-                },
-                });
-        }
         
-
         function UpdateDialogWithModel(index)
         {
-            var list = @Html.Raw(Newtonsoft.Json.JsonConvert.SerializeObject(@Model.Items));
-            list[index]
-            
+           resetSize();
+           var list = @Html.Raw(Newtonsoft.Json.JsonConvert.SerializeObject(@Model.Items));
+           
+           document.getElementById("ItemPriceId").value = list[index].Price;
+           document.getElementById("ItemNameId").value =  list[index].Name;
+           document.getElementsByClassName("SizeNameClass")[0].value =  list[index].SizeIds[0].Type;
+           document.getElementsByClassName("SizePriceClass")[0].value =  list[index].SizeIds[0].SizePrice;
 
-            document.getElementById("ItemPriceId").value = list[index].Price;
-            document.getElementById("ItemNameId").value =  list[index].Name;
+         //  console.log(list);
 
-            selectedIdForEdit = list[index].Id;
+           for(var i=1 ; i< list[index].SizeIds.length ; ++i)
+           {
+              addSize();
+              document.getElementsByClassName("SizeNameClass")[i].value =  list[index].SizeIds[i].Type;
+              document.getElementsByClassName("SizePriceClass")[i].value =  list[index].SizeIds[i].SizePrice;
+           }
+           document.getElementById("formId").action = "/Home/Edit/" + list[index].Id;
+
 
         }
 
         function DeleteItem(index){
-            //var list = Html.Raw(Newtonsoft.Json.JsonConvert.SerializeObject(Model.Items));
-            //;
+
                $.ajax({
                 url: '/Home/Delete/' + index ,
                 type: 'DELETE',
@@ -251,7 +207,45 @@
                 },
                 });
         }
+
+        function addSize()
+        {
+            var size = $('div[for="sizes"]:first').clone();
+
+            size.find('.add-size').addClass('remove-size');
+            size.find('.add-size').addClass('btn-danger');
+            size.find('.add-size').text('Remove');
+            size.find('.add-size').removeClass('add-size');
+            $('#frmItem .modal-body').append(size);
+        }
+
+        function resetSize()
+        {
+           document.getElementById("ItemPriceId").value  = '';
+           document.getElementById("ItemNameId").value  =  '';
+           
+           document.getElementsByClassName("SizeNameClass")[0].value =  '';
+           document.getElementsByClassName("SizePriceClass")[0].value = '';
+
+           removeElementsByClass("SizeNameClass") ;
+           removeElementsByClass("SizeNameLabelClass") ;
+           removeElementsByClass("SizeNameSpanClass") ;
+           removeElementsByClass("SizePriceClass") ;
+           removeElementsByClass("SizePriceLabelClass") ;
+           removeElementsByClass("SizePriceButtonClass") ;
+           removeElementsByClass("SizeButtonClassName") ;
+           removeElementsByClass("SizeClass") ;
+
+           
+           document.getElementById("formId").action = "/Home/Save";
+        }
        
-      //  });
+        function removeElementsByClass(className){
+             var elements = document.getElementsByClassName(className);
+             while(elements.length > 1){
+             elements[1].parentNode.removeChild(elements[1]);
+             }
+        }
+
     </script>
 }

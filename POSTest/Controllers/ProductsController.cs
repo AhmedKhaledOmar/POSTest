@@ -1,4 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
+using POSTest.Models;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -8,9 +10,16 @@ namespace POSTest.Controllers
 {
     public class ProductsController : Controller
     {
-        public IActionResult Index()
+        private readonly POSDBContext dbContext;
+        public ProductsController(POSDBContext context)
         {
-            return View();
+            dbContext = context;
+        }
+        public async Task<IActionResult> IndexAsync()
+        {
+            List<Item> Items = await dbContext.Items.Where(i => !i.IsDeleted)
+                .Include(c => c.SizeIds).ToListAsync();
+            return View(Items);
         }
     }
 }
