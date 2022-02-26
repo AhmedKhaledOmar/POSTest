@@ -71,13 +71,14 @@
        };
        products.push(product);
        window.localStorage.setItem("products" , JSON.stringify(products));
-
+       var length = products.length;
+       connection.invoke("SendProduct",product,length , (length-1));
     }
 
-    function reload(){
-        window.location.reload();
-    }
+   
 </script>
 @section Scripts{
     <script src="~/js/site.js"></script>
+     <script src="~/lib/signalr/dist/browser/signalr.js"></script>
 }
+ 

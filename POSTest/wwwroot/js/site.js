@@ -1,4 +1,6 @@
-﻿var totalPrice = 0;
+﻿var connection = new signalR.HubConnectionBuilder().withUrl("/productHub").build();
+
+var totalPrice = 0;
 var Items = window.localStorage.getItem("products");
 var ItemsConvert = JSON.parse(Items);
 if (ItemsConvert != null) {
@@ -8,13 +10,30 @@ if (ItemsConvert != null) {
 $(document).ready(function () {
     
         for (var index = 0; index < length; ++index) {
-            showProduct(ItemsConvert[index], length, index);
+            Show(ItemsConvert[index], length, index);
         
     }
 });
 
 
-function showProduct(Item, length,index) {
+connection.on("showProduct", function (Item, length, index) {
+    Show(Item, length, index);
+});
+
+connection.on("cancelProduct", function (indexofItem) {
+    NewItem = [];
+    for (var i = 0; i < length; ++i) {
+        if (i == indexofItem)
+            continue;
+        NewItem.push(ItemsConvert[i]);
+    }
+    window.localStorage.setItem("products", JSON.stringify(NewItem));
+    var elements = document.getElementsByClassName("superClass");
+    elements[indexofItem].parentNode.removeChild(elements[indexofItem]);
+});
+
+
+function Show(Item, length, index) {
     totalPrice = totalPrice + Item.productPrice + Item.productSizePrice;
 
     var productAdded = $('<div class="superClass list-group list-group-flush ">' +
@@ -27,7 +46,7 @@ function showProduct(Item, length,index) {
         '<div class="flex-grow-1">' +
         '<p class="mb-0 line-height-20 d-flex justify-content-between">' +
         (Item.productName + '-' + Item.productSizeName) +
-        '<i onclick="Cancel(' + index +')" title="Close" data-toggle="tooltip"' +
+        '<i onclick="Cancel(' + index + ')" title="Close" data-toggle="tooltip"' +
         ' class="hide-show-toggler-item small ti-close">' +
         '</i>' +
         '</p>' +
@@ -39,18 +58,18 @@ function showProduct(Item, length,index) {
     $('#newProduct').append(productAdded);
     $('#totalPrice').text(totalPrice);
     $('#countofProduct').text(length + " products");
+    return 0;
 }
+
+connection.start();
 
 function Cancel(indexofItem)
 {
     console.log(indexofItem);
-    NewItem = [];
-    for (var i = 0; i < length; ++i) {
-        if (i == indexofItem)
-            continue;
-        NewItem.push(ItemsConvert[i]);
-    }
-    window.localStorage.setItem("products", JSON.stringify(NewItem));
-    window.location.reload();
+    connection.invoke("CancelProduct",indexofItem);
 }
+
+
+
+
 

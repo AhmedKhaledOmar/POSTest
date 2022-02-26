@@ -1,34 +1,16 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
-using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.HttpsPolicy;
-using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.HttpOverrides;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Routing;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.Extensions.Hosting;
-using Microsoft.AspNetCore.StaticFiles;
-using System.Text;
-using Microsoft.AspNetCore.HttpOverrides;
-using System.Net;
-using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Authentication;
-using Microsoft.AspNetCore.Mvc.Razor;
-using System.Reflection;
-using System.Globalization;
-using Microsoft.AspNetCore.Localization;
-using Microsoft.Extensions.Options;
-using System.Text.Encodings.Web;
-using System.Text.Unicode;
-using Microsoft.AspNetCore.Razor.TagHelpers;
+using POSTest.Dto;
 using POSTest.Models;
+using POSTest.SignalR;
+using System;
 
 namespace POSTest
 {
@@ -92,16 +74,22 @@ namespace POSTest
                 // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
                 app.UseHsts();
             }
+           
 
             app.UseHttpsRedirection();
             app.UseStaticFiles();
 
             app.UseRouting();
+            app.UseAuthorization();
+            
             app.UseCors();
             app.UseAuthentication();
-            app.UseAuthorization();
             app.UseSession();
 
+            app.UseEndpoints(endpoints =>
+            {
+                endpoints.MapHub<AddProductHub>("/productHub");
+            });
             app.UseMvc(routes =>
             {
                 routes.MapRoute("default",

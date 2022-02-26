@@ -15,7 +15,7 @@ namespace POSTest.Models
         [Required(ErrorMessage = "Please, Enter Price of Item")]
         public int Price { get; set; }
         public string Picture { get; set; }
-        public List<Size>? SizeIds { get; set; }
+        public List<Size> SizeIds { get; set; }
         public bool IsDeleted { get; set; }
     }
 }
