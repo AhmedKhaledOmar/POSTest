@@ -55,23 +55,29 @@
            
 <script>
     var index = 0;
+    products = [];
     function AddToCard(itemIndex , sizeIndex) 
     {
       
        var Items = @Html.Raw(Newtonsoft.Json.JsonConvert.SerializeObject(@Model));
-        
-       window.localStorage.setItem("index", JSON.stringify(++index));
-        let product = {
-            "productId" : Items[itemIndex].Id,
-            "productName" : Items[itemIndex].Name,
-            "productPrice" : Items[itemIndex].Price,
-            "productPicture" : Items[itemIndex].Picture,
-            "productSizeName" : Items[itemIndex].SizeIds[sizeIndex].Type,
-            "productSizePrice" : Items[itemIndex].SizeIds[sizeIndex].SizePrice,
-        };
-        var i = localStorage.getItem("index");
-        window.localStorage.setItem("product" +  i , JSON.stringify(product));
-        location.reload();
-        //window.localStorage.clear();
+      
+       let product = {
+           "productId" : Items[itemIndex].Id,
+           "productName" : Items[itemIndex].Name,
+           "productPrice" : Items[itemIndex].Price,
+           "productPicture" : Items[itemIndex].Picture,
+           "productSizeName" : Items[itemIndex].SizeIds[sizeIndex].Type,
+           "productSizePrice" : Items[itemIndex].SizeIds[sizeIndex].SizePrice,
+       };
+       products.push(product);
+       window.localStorage.setItem("products" , JSON.stringify(products));
+
+    }
+
+    function reload(){
+        window.location.reload();
     }
 </script>
+@section Scripts{
+    <script src="~/js/site.js"></script>
+}
