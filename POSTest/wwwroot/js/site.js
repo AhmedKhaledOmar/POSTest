@@ -46,7 +46,7 @@ function Cancel(indexofItem)
     console.log(indexofItem);
     NewItem = [];
     for (var i = 0; i < length; ++i) {
-        if (i == index)
+        if (i == indexofItem)
             continue;
         NewItem.push(ItemsConvert[i]);
     }
